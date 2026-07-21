@@ -21,8 +21,6 @@ def set_xml():
             BanknoteBuying = safe_float(currency.find("BanknoteBuying"))
             BanknoteSelling = safe_float(currency.find("BanknoteSelling"))
             Unit = currency.find("Unit").text
-
-
             currencys.append([x,CurrencyCode,Isim,ForexBuying,ForexSelling,BanknoteBuying,BanknoteSelling,Unit])
         return currencys
     except Exception as e:
@@ -57,7 +55,6 @@ try:
     while True:
         currencys = set_xml()
         print_xml(currencys)
-
         currency = int(input("Bir numara secin: ")) - 1
         if currency > (len(currencys)-1):
             print("Yanlis tuslama")
