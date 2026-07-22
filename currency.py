@@ -20,7 +20,7 @@ def set_xml():
             ForexSelling = safe_float(currency.find("ForexSelling"))
             BanknoteBuying = safe_float(currency.find("BanknoteBuying"))
             BanknoteSelling = safe_float(currency.find("BanknoteSelling"))
-            Unit = currency.find("Unit").text
+            Unit = safe_float(currency.find("Unit"))
             currencys.append([x,CurrencyCode,Isim,ForexBuying,ForexSelling,BanknoteBuying,BanknoteSelling,Unit])
         return currencys
     except Exception as e:
@@ -41,13 +41,9 @@ def safe_float(element):
 
 def calculate_currency(currency):
     try:
-        money = float(input("Döviz islemi icin belirlediginiz miktar(tl) : "))
-        if currency[7] == "100":
-             finall_money =  (money / (currency[3]))*100
-             print(f"{money} TL = {format(finall_money, '.3f')} {currency[1]}")
-        else:     
-            finall_money =  money / (currency[3])
-            print(f"{money} TL = {format(finall_money, '.3f')} {currency[1]}")
+        amount = float(input("Döviz islemi icin belirlediginiz miktar(tl) : "))    
+        finall_amount =  (amount / (currency[3]))*currency[7]
+        print(f"{amount} TL = {format(finall_amount, '.3f')} {currency[1]}")
     except Exception as e:
         print(f"Bir hata oluştu: {e}")
 
