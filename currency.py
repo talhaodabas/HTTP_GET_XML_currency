@@ -37,7 +37,7 @@ def print_xml(currencys):
 def safe_float(element):
     try:
         clean_text = element.text.strip().replace(',','.')
-        return  float(clean_text.text)
+        return float(clean_text)
     except (AttributeError, ValueError):
         return 0.0
 
