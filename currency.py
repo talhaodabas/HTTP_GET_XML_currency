@@ -4,7 +4,7 @@ from urllib.request import urlopen
 def get_xml(url):
     try:
         with urlopen(url) as response:
-                xml_data = response.read()
+            xml_data = response.read()
         return xml_data
     except Exception as e:
         print(f"Bir hata oluştu: {e}")
@@ -12,7 +12,7 @@ def get_xml(url):
 def set_xml():
     try:
         root = ET.fromstring(get_xml("https://www.tcmb.gov.tr/kurlar/today.xml"))
-        currencys =[]
+        currencys = []
         for x,currency in enumerate(root.findall("Currency"), start=1):
             CurrencyCode = currency.get("CurrencyCode")
             Isim = currency.find("Isim").text
@@ -24,20 +24,22 @@ def set_xml():
             currencys.append([x,CurrencyCode,Isim,ForexBuying,ForexSelling,BanknoteBuying,BanknoteSelling,Unit])
         return currencys
     except Exception as e:
-            print(f"Bir hata oluştu: {e}")
+        print(f"Bir hata oluştu: {e}")
 
 def print_xml(currencys):
     try:
         for currency in currencys:
-             print(f"{currency[0]} - {currency[1]} ({currency[2]})")
+            print(f"{currency[0]} - {currency[1]} ({currency[2]})")
         print()
     except Exception as e:
-                print(f"Bir hata oluştu: {e}")
+        print(f"Bir hata oluştu: {e}")
 
 def safe_float(element):
-    if element is not None and element.text:
-        return  float(element.text)
-    return 0.0
+    try:
+        clean_text = element.text.strip().replace(',','.')
+        return  float(clean_text.text)
+    except (AttributeError, ValueError):
+        return 0.0
 
 def calculate_currency(currency):
     try:
