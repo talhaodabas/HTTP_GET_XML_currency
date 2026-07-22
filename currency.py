@@ -43,7 +43,10 @@ def safe_float(element):
 
 def calculate_currency(currency):
     try:
-        amount = float(input("Döviz islemi icin belirlediginiz miktar(tl) : "))    
+        while True:
+            amount = float(input("Döviz islemi icin belirlediginiz miktar(tl) : "))
+            if amount > 0:break
+            print("0 dan büyük pozitif bir sayi giriniz")
         finall_amount =  (amount / (currency[3]))*currency[7]
         print(f"{amount} TL = {format(finall_amount, '.3f')} {currency[1]}")
     except Exception as e:
@@ -61,6 +64,10 @@ try:
         print(f"{currency[1]}, Döviz Alis/Satis = {currency[3]}/{currency[4]}, Efektif Alis/Satis = {currency[5]}/{currency[6]}")
         
         while True:
+            if currency[3] <= 0 or currency[7] <= 0:
+                print(f"ForexBuying: {currency[3]} veya Unit: {currency[7]} değeri 0 veya daha küçük olduğundan hesap yapilamaz.")
+                input("Devam etmek için her hangi bir tusa basin")
+                break
             select = int(input("Ana menü için 0 Belirli bir para miktarini çevirmek için 1: "))
             if select == 1:
                 calculate_currency(currency)
