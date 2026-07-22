@@ -3,7 +3,14 @@ Uygulama, XML dosyasındaki 22 farklı döviz biriminin güncel kur verilerini �
 
 Kullanıcılar seçtikleri döviz biriminin anlık verilerini görüntüleyebileceği gibi, belirttikleri TL tutarını seçilen para birimine dönüştürme imkanına da sahiptir.
 
-EN;
-The application retrieves current exchange rate data for 22 different currencies from an XML file and presents it to the user. In the XML structure, the “Grandchild” elements contained within each “Currency” object are grouped and transferred to an array; this process is repeated in real time with each request. The original field names in the XML have been preserved in the naming conventions.
+Fonksiyonlar;
+    get_xml(url): Verilen url adresinde ki xml dosyayı çeker.   xml_data olarak çıktı verir.
 
-Users can view real-time data for their selected currency and also convert a specified amount in Turkish lira (TL) to the selected currency.
+    set_xml(): get_xml den aldığı xml verisini okunabilir hale getirir. Veriyi currencys dizisine [x,CurrencyCode,Isim,ForexBuying,ForexSelling,BanknoteBuying,BanknoteSelling,Unit] şeklinde sırayla ekler. Tamamlanmış currencys dizisini çıkartır.
+
+    print_xml(currencys): currencys dizisinde bulunan sütunlarda ki x,CurrencyCode,Isim verilerini ekrana yazdırır.
+
+    safe_float(element): ForexBuying,ForexSelling,BanknoteBuying,BanknoteSelling burada ki veriler boş veya float a dönüştürülemez gelmesi durumunda hata almamak için önceden bu verilerin boş ve text olduğunu kontrol edip float a dönüştürüyor. Eğer veri boş veya text değil ise veriyi 0.0 eşitliyor hataları önlemek için.
+
+    calculate_currency: Kişi girdiği tl değerin seçtiği para birimindeki karşılığını burada hesaplanıyor. Şuan sadece 1 ve 100 unitler için hazırlandı.
+
