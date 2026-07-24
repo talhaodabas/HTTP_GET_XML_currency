@@ -16,11 +16,11 @@ def set_xml():
         for x,currency in enumerate(root.findall("Currency"), start=1):
             CurrencyCode = currency.get("CurrencyCode")
             Isim = currency.find("Isim").text
-            ForexBuying = safe_float(currency.find("ForexBuying"))
-            ForexSelling = safe_float(currency.find("ForexSelling"))
-            BanknoteBuying = safe_float(currency.find("BanknoteBuying"))
-            BanknoteSelling = safe_float(currency.find("BanknoteSelling"))
-            Unit = safe_float(currency.find("Unit"))
+            ForexBuying = safe_float_element(currency.find("ForexBuying"))
+            ForexSelling = safe_float_element(currency.find("ForexSelling"))
+            BanknoteBuying = safe_float_element(currency.find("BanknoteBuying"))
+            BanknoteSelling = safe_float_element(currency.find("BanknoteSelling"))
+            Unit = safe_float_element(currency.find("Unit"))
             currencys.append([x,CurrencyCode,Isim,ForexBuying,ForexSelling,BanknoteBuying,BanknoteSelling,Unit])
         return currencys
     except Exception as e:
@@ -34,18 +34,35 @@ def print_xml(currencys):
     except Exception as e:
         print(f"Bir hata oluştu: {e}")
 
-def safe_float(element):
+def safe_float_element(element):
     try:
-        clean_text = element.text.strip().replace(',','.')
-        return float(clean_text)
-    except (AttributeError, ValueError):
+        clean_number = float(element.text.strip().replace(',','.'))
+        if clean_number >= 0:return clean_number
         return 0.0
+    except Exception:
+        return 0.0
+
+def safe_float(number):
+    try:
+        clean_number = float(number.strip().replace(',','.'))
+        if clean_number >= 0:return clean_number
+        return 0.0
+    except Exception:
+        return 0.0
+
+def safe_int(number):
+    try:
+        clean_number = int(number.strip().replace(',',''))
+        if clean_number >= 0:return clean_number
+        return 0
+    except Exception:
+        return 0
 
 def calculate_currency(currency):
     try:
         while True:
-            amount = float(input("Döviz islemi icin belirlediginiz miktar(tl) : "))
-            if amount > 0:break
+            amount = safe_float(input("Döviz islemi icin belirlediginiz miktar(tl) : "))
+            if amount >= 1:break
             print("0 dan büyük pozitif bir sayi giriniz")
         finall_amount =  (amount / (currency[3]))*currency[7]
         print(f"{amount} TL = {format(finall_amount, '.3f')} {currency[1]}")
@@ -53,27 +70,30 @@ def calculate_currency(currency):
         print(f"Bir hata oluştu: {e}")
 
 try:
-    while True:
-        currencys = set_xml()
-        print_xml(currencys)
-        currency = int(input("Bir numara secin: ")) - 1
-        if currency > (len(currencys)-1):
-            print("Yanlis tuslama")
-            break
-        currency = currencys[currency]
-        print(f"{currency[1]}, Döviz Alis/Satis = {currency[3]}/{currency[4]}, Efektif Alis/Satis = {currency[5]}/{currency[6]}")
-        
+    if __name__ == '__main__':
         while True:
-            if currency[3] <= 0 or currency[7] <= 0:
-                print(f"ForexBuying: {currency[3]} veya Unit: {currency[7]} değeri 0 veya daha küçük olduğundan hesap yapilamaz.")
-                input("Devam etmek için her hangi bir tusa basin")
-                break
-            select = int(input("Ana menü için 0 Belirli bir para miktarini çevirmek için 1: "))
-            if select == 1:
-                calculate_currency(currency)
-            elif select == 0:
-                break
-            else:
-                print("Yanlis tuslama")
+            while True:
+                currencys = set_xml()
+                print_xml(currencys)
+                number = safe_int(input("Bir numara secin: "))
+                if number > (len(currencys)) or number <= 0:
+                    print("Yanlis tuslama")
+                    input("Devam etmek için 'enter' a basin")
+                    break
+                number-=1
+                currency = currencys[number]
+                print(f"{currency[1]}, Döviz Alis/Satis = {currency[3]}/{currency[4]}, Efektif Alis/Satis = {currency[5]}/{currency[6]}")
+                if currency[3] <= 0 or currency[7] <= 0:
+                    print(f"ForexBuying: {currency[3]} veya Unit: {currency[7]} değeri 0 veya daha küçük olduğundan hesap yapilamaz.")
+                    input("Devam etmek için 'enter' a basin")
+                    break
+                while True:
+                    select = safe_int(input("Ana menü için 0 Belirli bir para miktarini çevirmek için 1: "))
+                    if select == 1:
+                        calculate_currency(currency)
+                    elif select == 0:
+                        break
+                    else:
+                        print("Yanlis tuslama")
 except Exception as e:
     print(f"Bir hata oluştu: {e}")
