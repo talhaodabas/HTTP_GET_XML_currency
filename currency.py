@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 from urllib.request import urlopen
+import sys
 
 def set_xml(xml_data):
     try:
@@ -63,14 +64,30 @@ def calculate_currency(currency):
 
 try:
     if __name__ == '__main__':
+        try_count = 0
+        max_try_count = 3
         while True:
             while True:
                 try:
                     with urlopen("https://www.tcmb.gov.tr/kurlar/today.xml") as response:
-                        xml_data = response.read()
+                        result_successful = response.status
+                        if result_successful:
+                            xml_data = response.read()
+                        else:
+                            print("Istek basarisiz oldu")
+                            print(f"Deneniyor: {try_count + 1} / {max_try_count}")
+                            try_count+=1
+                            if try_count == max_try_count:
+                                print(f"Denenme sonlandirildi. Url ya da kodu kontrol edin")
+                                sys.exit()
+                            break
                 except Exception as e:
                     print(f"Bir hata olustu: {e}")
-                    input("Tekrar denemek için enter a basin")
+                    print(f"Deneniyor: {try_count + 1} / {max_try_count}")
+                    try_count+=1
+                    if try_count == max_try_count:
+                        print(f"Denenme sonlandirildi. Url ya da kodu kontrol edin")
+                        sys.exit()
                     break
                 currencys = set_xml(xml_data)
                 print_xml(currencys)
