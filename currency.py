@@ -1,17 +1,9 @@
 import xml.etree.ElementTree as ET
 from urllib.request import urlopen
 
-def get_xml(url):
+def set_xml(xml_data):
     try:
-        with urlopen(url) as response:
-            xml_data = response.read()
-        return xml_data
-    except Exception as e:
-        print(f"Bir hata oluştu: {e}")
-
-def set_xml():
-    try:
-        root = ET.fromstring(get_xml("https://www.tcmb.gov.tr/kurlar/today.xml"))
+        root = ET.fromstring(xml_data)
         currencys = []
         for x,currency in enumerate(root.findall("Currency"), start=1):
             CurrencyCode = currency.get("CurrencyCode")
@@ -24,7 +16,7 @@ def set_xml():
             currencys.append([x,CurrencyCode,Isim,ForexBuying,ForexSelling,BanknoteBuying,BanknoteSelling,Unit])
         return currencys
     except Exception as e:
-        print(f"Bir hata oluştu: {e}")
+        print(f"Bir hata olustu: {e}")
 
 def print_xml(currencys):
     try:
@@ -32,7 +24,7 @@ def print_xml(currencys):
             print(f"{currency[0]} - {currency[1]} ({currency[2]})")
         print()
     except Exception as e:
-        print(f"Bir hata oluştu: {e}")
+        print(f"Bir hata olustu: {e}")
 
 def safe_float_element(element):
     try:
@@ -67,13 +59,20 @@ def calculate_currency(currency):
         finall_amount =  (amount / (currency[3]))*currency[7]
         print(f"{amount} TL = {format(finall_amount, '.3f')} {currency[1]}")
     except Exception as e:
-        print(f"Bir hata oluştu: {e}")
+        print(f"Bir hata olustu: {e}")
 
 try:
     if __name__ == '__main__':
         while True:
             while True:
-                currencys = set_xml()
+                try:
+                    with urlopen("https://www.tcmb.gov.tr/kurlar/today.xml") as response:
+                        xml_data = response.read()
+                except Exception as e:
+                    print(f"Bir hata olustu: {e}")
+                    input("Tekrar denemek için enter a basin")
+                    break
+                currencys = set_xml(xml_data)
                 print_xml(currencys)
                 number = safe_int(input("Bir numara secin: "))
                 if number > (len(currencys)) or number <= 0:
@@ -96,4 +95,4 @@ try:
                     else:
                         print("Yanlis tuslama")
 except Exception as e:
-    print(f"Bir hata oluştu: {e}")
+    print(f"Bir hata olustu: {e}")
