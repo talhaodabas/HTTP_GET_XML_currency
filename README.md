@@ -8,11 +8,11 @@ Kullanıcılar seçtikleri döviz biriminin anlık verilerini görüntüleyebile
 
 ##    Fonksiyonlar
 
-* `get_xml(url)`: Verilen URL adresindeki XML dosyasını çeker ve `xml_data` olarak çıktı verir.
-* `set_xml()`: `get_xml()` ile alınan XML verisini işler. Veriyi `currencys` dizisine şu formatta sırayla ekler ve döndürür:
-  `[x, CurrencyCode, Isim, ForexBuying, ForexSelling, BanknoteBuying, BanknoteSelling, Unit]`
-* `print_xml(currencys)`: `currencys` dizisinde bulunan liste elemanlarını (`x`, `CurrencyCode`, `Isim`) ekrana listeler.
-* `safe_float_element(element)`: XML'den gelen veriler boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `float` tipine çevirir, aksi halde `0.0` döndürür.
-* `safe_float(number)`: `input` dan gelen verinin boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `float` tipine çevirir, aksi halde `0.0` döndürür.
-* `safe_int(number)`: `input` dan gelen verinin boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `int` tipine çevirir, aksi halde `0` döndürür.
-* `calculate_currency(currency)`: Kullanıcının girdiği TL tutarının seçilen para birimindeki karşılığını hesaplar.
+* `fetch_xml_data(url)`: Verilen URL adresindeki XML dosyasını çeker ve `xml_data` olarak çıktı verir.
+* `parse_currencies(xml_data)`: `fetch_xml_data(url)` ile alınan XML verisini işler. Veriyi `currencies` dizisine şu formatta sırayla ekler ve döndürür:
+  `[x, currency_code, currency_name, forex_buying, forex_selling, banknote_buying, banknote_selling, unit]`
+* `display_currency_menu(currencies)`: `currencies` dizisinde bulunan liste elemanlarını (`x`, `currency_code`, `currency_name`) ekrana listeler.
+* `extract_float_from_element(element)`: XML'den gelen veriler boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `float` tipine çevirir, aksi halde `0.0` döndürür.
+* `convert_string_to_float(number)`: `input` dan gelen verinin boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `float` tipine çevirir, aksi halde `0.0` döndürür.
+* `convert_string_to_int`: `input` dan gelen verinin boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `int` tipine çevirir, aksi halde `0` döndürür.
+* `calculate_exchange_amount(currency)`: Kullanıcının girdiği TL tutarının seçilen para birimindeki karşılığını hesaplar.
