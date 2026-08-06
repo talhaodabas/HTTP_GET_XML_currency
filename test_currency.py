@@ -2,33 +2,35 @@ import unittest
 
 from currency import (
     convert_string_to_float,
-    convert_string_to_int,
-    extract_float_from_element,
+    safe_float,
+    safe_int,
 )
 
 
 class TestExtractFloatFromElement(unittest.TestCase):
-
     def test_extract_float_from_element_none(self):
-        result = extract_float_from_element(None)
+        result = safe_float(None)
         self.assertEqual(result, 0.0)
+
     def test_extract_float_from_element_valid(self):
         class FakeElement:
-            text = "32,50" 
-        result = extract_float_from_element(FakeElement())
+            text = "32,50"
+
+        result = safe_float(FakeElement())
         self.assertEqual(result, 32.5)
 
-class TestConvertStringToFloat(unittest.TestCase):
 
+class TestConvertStringToFloat(unittest.TestCase):
     def test_convert_string_to_float_none(self):
         result = convert_string_to_float(None)
         self.assertEqual(result, 0.0)
 
-class TestConvertStringToInt(unittest.TestCase):
 
+class TestConvertStringToInt(unittest.TestCase):
     def test_convert_string_to_int_none(self):
-        result = convert_string_to_int(None)
+        result = safe_int(None)
         self.assertEqual(result, 0)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main(verbosity=2)
