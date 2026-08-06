@@ -22,7 +22,7 @@ Kullanıcılar seçtikleri döviz biriminin anlık verilerini görüntüleyebile
   }
 * `display_currency_menu(currencies)`: `currencies` dizisinde bulunan para birimlerini kodu ve adıyla birlikte menü formatında ekrana listeler.
 * `display_currency_detail(currency)`: Seçilen para birimine ait kodu ve detaylı kur bilgilerini (Döviz Alış/Satış, Efektif Alış/Satış) düzenli bir formatta ekrana basar.
-* `extract_float_from_element(element)`: XML'den gelen veriler boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `float` tipine çevirir, aksi halde `0.0` döndürür.
-* `convert_string_to_float(number)`: `input` dan gelen verinin boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `float` tipine çevirir, aksi halde `0.0` döndürür.
-* `convert_string_to_int`: `input` dan gelen verinin boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `int` tipine çevirir, aksi halde `0` döndürür.
+* `safe_str(value)`: XML'den gelen veriler boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler ve `input` dan gelen verinin boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `str` tipine çevirir, aksi halde `Deger bos` döndürür.
+* `safe_float(value)`: XML'den gelen veriler boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler ve `input` dan gelen verinin boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `float` tipine çevirir, aksi halde `0.0` döndürür.
+* `safe_int(value: str)`: `input` dan gelen verinin boş veya dönüştürülemeyen yapıda olduğunda uygulamanın çökmesini önler; geçerli bir metin varsa `int` tipine çevirir, aksi halde `0` döndürür.
 * `calculate_exchange_amount(currency)`: Kullanıcının girdiği TL tutarının, seçilen para birimi ve birim (`unit`) değeri dikkate alınarak karşılığını hesaplar.
