@@ -6,9 +6,8 @@ from urllib.request import urlopen
 URL_EXCHANGE_RATES_TODAY = "https://www.tcmb.gov.tr/kurlar/today.xml"
 
 
-def fetch_xml_data(url):
+def fetch_xml_data(url, max_try_count=3, delay_time=3):
     try_count = 0
-    max_try_count = 3
     while try_count < max_try_count:
         try:
             with urlopen(url) as response:
@@ -18,7 +17,7 @@ def fetch_xml_data(url):
         except Exception as e:
             print(f"fetch_xml_data`de bir hata olustu (Deneme sayisi: {try_count + 1} / {max_try_count}): {e}")
         try_count += 1
-        time.sleep(3)
+        time.sleep(delay_time)
     print("Denenme sonlandirildi. Veri çekilemedi")
     return None
 
@@ -45,8 +44,8 @@ def parse_currencies(xml_data):
     return None
 
 
-def refresh_currencies():
-    xml = fetch_xml_data(URL_EXCHANGE_RATES_TODAY)
+def refresh_currencies(url=URL_EXCHANGE_RATES_TODAY, delay_time=3):
+    xml = fetch_xml_data(url, delay_time=delay_time)
     if not xml:
         return None
     currencies = parse_currencies(xml)
@@ -100,20 +99,32 @@ def safe_int(value: str) -> int:
         return -1
 
 
-def calculate_exchange_amount(currency):
+def calculate_exchange(amount: float, forex_buying: float, unit: float) -> float:
+    try:
+        if forex_buying <= 0 or unit <= 0:
+            return 0.0
+        return (amount / forex_buying) * unit
+    except Exception as e:
+        print(f"calculate_exchange`de bir hata olustu: {e}")
+        return 0.0
+
+
+def handle_exchange(currency):
     try:
         while True:
-            amount = safe_float(input("Döviz islemi icin belirlediginiz miktar(tl) : "))
+            amount = safe_float(
+                input("Döviz islemi icin belirlediginiz miktar(tl) : ")
+            )
             if amount > 0:
                 break
             print("0 dan büyük pozitif bir sayi giriniz")
 
-        final_amount = (amount / currency["forex_buying"]) * currency["unit"]
+        final_amount = calculate_exchange(amount, currency["forex_buying"], currency["unit"])
         print(
             f"{amount} TL = {final_amount:.3f} {currency['currency_name']}"
         )
     except Exception as e:
-        print(f"calculate_exchange_amount`de bir hata olustu: {e}")
+        print(f"handle_exchange`de bir hata olustu: {e}")
 
 
 try:
@@ -135,7 +146,7 @@ try:
                     print("Kur güncellendi")
                 else:
                     print("Hata, eski kurdan devam ediniliniyor")
-            start_time = time.time()
+                start_time = time.time()
             display_currency_menu(currencies)
 
             input_currency = safe_int(input("Bir numara secin: "))
@@ -161,7 +172,7 @@ try:
                         )
                         input("Ana menü için 'enter' a basin")
                         break
-                    calculate_exchange_amount(currency)
+                    handle_exchange(currency)
                 elif input_select == 0:
                     break
                 else:
