@@ -9,19 +9,18 @@ URL_EXCHANGE_RATES_TODAY = "https://www.tcmb.gov.tr/kurlar/today.xml"
 def fetch_xml_data(url):
     try_count = 0
     max_try_count = 3
-    while True:
+    while try_count < max_try_count:
         try:
             with urlopen(url) as response:
                 if response.status == 200:
                     return response.read()
                 print("Istek basarisiz oldu")
         except Exception as e:
-            print(f"fetch_xml_data`de bir hata olustu({try_count + 1} / {max_try_count}): {e}")
-            try_count += 1
-            if try_count == max_try_count:
-                print("Denenme sonlandirildi. Url ya da kodu kontrol edin")
-                sys.exit()
-            time.sleep(3)
+            print(f"fetch_xml_data`de bir hata olustu (Deneme sayisi: {try_count + 1} / {max_try_count}): {e}")
+        try_count += 1
+        time.sleep(3)
+    print("Denenme sonlandirildi. Veri çekilemedi")
+    return None
 
 
 def parse_currencies(xml_data):
@@ -42,6 +41,18 @@ def parse_currencies(xml_data):
         return currencies
     except Exception as e:
         print(f"parse_currencies`de bir hata olustu: {e}")
+    print("Veri ayriştirilamadi")
+    return None
+
+
+def refresh_currencies():
+    xml = fetch_xml_data(URL_EXCHANGE_RATES_TODAY)
+    if not xml:
+        return None
+    currencies = parse_currencies(xml)
+    if not currencies:
+        return None
+    return currencies
 
 
 def display_currency_menu(currencies):
@@ -107,9 +118,24 @@ def calculate_exchange_amount(currency):
 
 try:
     if __name__ == "__main__":
+        currencies = refresh_currencies()
+        if not currencies:
+            print("'currencies' oluşturulunamadi")
+            sys.exit()
+        start_time = time.time()
+        check_time = 60
         while True:
-            xml = fetch_xml_data(URL_EXCHANGE_RATES_TODAY)
-            currencies = parse_currencies(xml)
+            current_time = time.time()
+            if current_time - start_time > check_time:
+                print("Kur güncelleniyor...")
+                time.sleep(1)
+                new_currencies = refresh_currencies()
+                if new_currencies:
+                    currencies = new_currencies
+                    print("Kur güncellendi")
+                else:
+                    print("Hata, eski kurdan devam ediniliniyor")
+            start_time = time.time()
             display_currency_menu(currencies)
 
             input_currency = safe_int(input("Bir numara secin: "))
@@ -122,13 +148,6 @@ try:
             currency = currencies[input_currency]
             display_currency_detail(currency)
 
-            if currency["forex_buying"] <= 0 or currency["unit"] <= 0:
-                print(
-                    f"ForexBuying: {currency['forex_buying']} veya Unit: {currency['unit']} değeri 0 veya daha küçük olduğundan hesap yapilamaz."
-                )
-                input("Devam etmek için 'enter' a basin")
-                continue
-
             while True:
                 input_select = safe_int(
                     input(
@@ -136,6 +155,12 @@ try:
                     )
                 )
                 if input_select == 1:
+                    if currency["forex_buying"] <= 0 or currency["unit"] <= 0:
+                        print(
+                            f"{currency['currency_code']} kurunun Döviz Alis/Satis veya Unit değeri bozuk olduğundan hesap yapilamaz."
+                        )
+                        input("Ana menü için 'enter' a basin")
+                        break
                     calculate_exchange_amount(currency)
                 elif input_select == 0:
                     break

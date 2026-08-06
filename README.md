@@ -8,7 +8,7 @@ Kullanıcılar seçtikleri döviz biriminin anlık verilerini görüntüleyebile
 
 ##    Fonksiyonlar
 
-* `fetch_xml_data(url)`: Verilen URL adresindeki XML dosyasını çeker ve `xml_data` olarak çıktı verir.
+* `fetch_xml_data(url)`: Verilen URL adresindeki XML dosyasını çeker ve `xml_data` olarak çıktı verir. Veri alınamadığı durumda 3 defa dener.
 * `parse_currencies(xml_data)`: XML verisini ayrıştırır. Her bir para birimini Dictionary yapısına dönüştürerek `currencies` dizisine şu formatta ekler ve döndürür:
   ```python
   {
