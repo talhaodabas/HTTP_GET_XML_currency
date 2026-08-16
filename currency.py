@@ -14,7 +14,7 @@ def fetch_xml_data(url, max_try_count=3, delay_time=3):
                 if response.status == 200:
                     return response.read()
                 print("Istek basarisiz oldu")
-        except Exception as e:
+        except ValueError as e:
             print(f"fetch_xml_data`de bir hata olustu (Deneme sayisi: {try_count + 1} / {max_try_count}): {e}")
         try_count += 1
         time.sleep(delay_time)
@@ -38,7 +38,7 @@ def parse_currencies(xml_data):
             }
             currencies.append(currency_dict)
         return currencies
-    except Exception as e:
+    except ValueError as e:
         print(f"parse_currencies`de bir hata olustu: {e}")
     print("Veri ayriştirilamadi")
     return None
@@ -67,13 +67,20 @@ def display_currency_detail(currency):
 
 
 def safe_str(value) -> str:
+    if hasattr(value, "text"):
+        value = value.text
+    if value is None:
+        return "Deger bos"
+    if not isinstance(value,str):
+        return "Deger none_str"
     try:
-        if hasattr(value, "text"):
-            value = value.text
-        if value is None:
-            return "Deger bos"
+        float(value)
+        return "Deger none_str"
+    except ValueError:
+        pass
+    try:
         return str(value).strip()
-    except Exception as e:
+    except ValueError as e:
         print(f"safe_str`de bir hata olustu: {e}")
         return "Veri alinamadi"
 
@@ -87,24 +94,26 @@ def safe_float(value) -> float:
     try:
         clean_number = float(str(value).strip().replace(",", "."))
         return max(clean_number, 0.0)
-    except Exception:
+    except ValueError:
         return 0.0
 
 
 def safe_int(value: str) -> int:
+    if value is None:
+        return -1
     try:
         clean_value = int(value.strip().replace(",", ""))
         return max(clean_value, -1)
-    except Exception:
+    except ValueError:
         return -1
 
 
 def calculate_exchange(amount: float, forex_buying: float, unit: float) -> float:
+    if forex_buying is None or unit is None or forex_buying <=0 or unit <=0:
+        return 0.0
     try:
-        if forex_buying <= 0 or unit <= 0:
-            return 0.0
         return (amount / forex_buying) * unit
-    except Exception as e:
+    except ValueError as e:
         print(f"calculate_exchange`de bir hata olustu: {e}")
         return 0.0
 
@@ -123,7 +132,7 @@ def handle_exchange(currency):
         print(
             f"{amount} TL = {final_amount:.3f} {currency['currency_name']}"
         )
-    except Exception as e:
+    except ValueError as e:
         print(f"handle_exchange`de bir hata olustu: {e}")
 
 
@@ -179,5 +188,5 @@ try:
                     print("Yanlis tuslama")
                     input("Devam etmek için 'enter' a basin")
                     continue
-except Exception as e:
+except ValueError as e:
     print(f"Bir hata olustu: {e}")
